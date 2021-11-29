@@ -14,18 +14,39 @@ def isA(i, j):
 def isB(i, j):
     return grid[i][j]>=19 and grid[i][j]<20
 
+def isF(i, j):
+    return grid[i][j]>=17 and grid[i][j]<18
+
+#def isNearbyA(x, y):
+#    # algorithm for detecting nearby A
+#    t=2
+#    if y+3<n:
+#        for i in range(x-t, x+t+1):
+#            for j in range(y-t, y+t):
+#                #if isA(i, j) and j>=brightEnoughColumn:
+#                if isA(i, j):
+#                    return True
+#
+#        return False
+
+Y=[] # stores amt of 'y' in each cell(or compartment as son calls it)
+c=10 # that constant in line #94
+
+th4 = 20
+dy = 1
+
 #n=10
 n = int(input("Enter the size of the grid dipshit "))
 brightEnoughColumn = int(51*n/100)
 print(brightEnoughColumn)
 
-k = 1
+k = 10
 dt = 0.1 # dt babua
 
 
 grid = np.random.rand(n, n) * 20
-cmap = colors.ListedColormap(['white', 'blue', 'green'])
-bounds = [0,18,19,20]
+cmap = colors.ListedColormap(['white', 'yellow', 'blue', 'green'])
+bounds = [0,17,18,19,20]
 norm = colors.BoundaryNorm(bounds, cmap.N)
 
 plt.ion()
@@ -50,12 +71,19 @@ id_B=[] # not son's idea
 
 temp=0
 
+# initializing the id_A and id_B arrays
 for i in range(n):
     for j in range(n):
         if(isA(i, j)):
-            id_A.append([i, j, 0.01])
+            id_A.append([i, j, 0.0, 0.0])
         if(isB(i, j)):
-            id_B.append([i, j, 0.01])
+            id_B.append([i, j, 0.0, 0.0])
+
+for i in range(n):
+    Y.append([])
+    for j in range(n):
+        Y[i].append(0)
+
 
 for t in range(n):
     for r in range(len(id_A)):
@@ -72,17 +100,40 @@ for t in range(n):
             x = x+dx
             id_A[r][2] = x
 
-    for r in range(len(id_B)):
-        i, j, y = id_B[r]
-        if isNearbyA(i, j):
-            y=y+dy
-            
+        for i1 in range(n):
+            for j1 in range(n):
+                if i1==i and j1==j:
+                    continue
+                if x > th2:
+                    x = i1-i
+                    y = j1-j
+                    Y[i1][j1]+=1.0/(x*x+y*y) * c
                 
+
+    for r in range(len(id_B)):
+        i, j, y, f= id_B[r]
+        y+=Y[i][j]
+
+        if isF(i, j-1):
+            f+=1
+
+        if j>=1 and y>th4:
+            print("threshold reached; y = ", id_B[r][2])
+            temp = grid[i][j]
+            grid[i][j] = grid[i][j-1]
+            grid[i][j-1] = temp
+            id_B[r][1] = id_B[r][1]-1
+
+
+        y-=Y[i][j]*0.9
+        Y[i][j]=0
+        id_B[r][2]=y
+                           
 
     ax.imshow(grid, cmap=cmap, norm=norm)
     fig.canvas.draw()
     fig.canvas.flush_events()
     if n<=50:
-        time.sleep(10/n)
+        time.sleep(1/n)
 
     print(t)
