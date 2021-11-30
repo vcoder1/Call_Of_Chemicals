@@ -29,10 +29,21 @@ def isF(i, j):
 #
 #        return False
 
+Y1=[]
+V1=[]
+T=[]
+
+th5 = 2.5
+
+decayerOfY = 8.0/9 # the death of Y is imminent
+
+V = [] # smort'nt
+
 Y=[] # stores amt of 'y' in each cell(or compartment as son calls it)
 c=10 # that constant in line #94
+th2 = 1
 
-th4 = 20
+th4 = 0
 dy = 1
 
 #n=10
@@ -79,15 +90,25 @@ for i in range(n):
         if(isB(i, j)):
             id_B.append([i, j, 0.0, 0.0])
 
+# create a grid of zeros for Y
 for i in range(n):
     Y.append([])
     for j in range(n):
         Y[i].append(0)
 
+# create a grid of zeros for V
+for i in range(n):
+    V.append([])
+    for j in range(n):
+        V[i].append(0)
 
+# meta updation loop - where each frame is being generated
 for t in range(n):
+    # updation for As
     for r in range(len(id_A)):
-        i, j, x = id_A[r]
+        i, j, X, v = id_A[r]
+        v+=V[i][j]
+        # update position of A's bacterium
         if j!=n-1 and j>=brightEnoughColumn:
             """First update positions of the bacterium"""
             temp = grid[i][j]
@@ -96,20 +117,28 @@ for t in range(n):
             id_A[r][1] = id_A[r][1]+1
 
             """Update x"""
-            dx = k*x*dt
-            x = x+dx
-            id_A[r][2] = x
+            dx = k*X*dt
+            X = X+dx
+            if v>th5:
+                X=0
+            id_A[r][2] = X
+            
 
+
+        # update the concentrations for Y in the entire grid
         for i1 in range(n):
             for j1 in range(n):
                 if i1==i and j1==j:
                     continue
-                if x > th2:
+                if X > th2:
                     x = i1-i
                     y = j1-j
                     Y[i1][j1]+=1.0/(x*x+y*y) * c
-                
 
+                Y[i1][j1]/=decayerOfY
+
+
+    # updation for Bs
     for r in range(len(id_B)):
         i, j, y, f= id_B[r]
         y+=Y[i][j]
@@ -117,7 +146,10 @@ for t in range(n):
         if isF(i, j-1):
             f+=1
 
-        if j>=1 and y>th4:
+    # update position of B's bacterium
+
+    if j!=n-1 and j>=brightEnoughColumn:
+        if j>=1 and y>=th4:
             print("threshold reached; y = ", id_B[r][2])
             temp = grid[i][j]
             grid[i][j] = grid[i][j-1]
@@ -128,7 +160,17 @@ for t in range(n):
         y-=Y[i][j]*0.9
         Y[i][j]=0
         id_B[r][2]=y
-                           
+
+        # update the concentrations for V in the entire grid
+        for i1 in range(n):
+            for j1 in range(n):
+                if i1==i and j1==j:
+                    continue
+
+                x = i1-i
+                y = j1-j
+                V[i1][j1]+=1.0/(x*x+y*y) * f
+                                   
 
     ax.imshow(grid, cmap=cmap, norm=norm)
     fig.canvas.draw()
@@ -137,3 +179,21 @@ for t in range(n):
         time.sleep(1/n)
 
     print(t)
+
+    sumV = 0
+    sumY = 0
+    for i in range(n):
+        for j in range(n):
+            sumV += V[i][j]
+            sumY += Y[i][j]
+
+    V1.append(sumV)
+    Y1.append(sumY)
+    T.append(t)
+print(Y1)
+print(T)
+
+import matplotlib.pyplot as plt1
+#plt.plot(V1, T)
+plt1.plot(Y1, T)
+plt1.show()
