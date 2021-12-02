@@ -33,7 +33,7 @@ Y1=[]
 V1=[]
 T=[]
 
-th5 = 2.5
+th5 = 1
 
 decayerOfY = 8.0/9 # the death of Y is imminent
 
@@ -146,20 +146,20 @@ for t in range(n):
         if isF(i, j-1):
             f+=1
 
-    # update position of B's bacterium
+        # update position of B's bacterium
 
-    if j!=n-1 and j>=brightEnoughColumn:
-        if j>=1 and y>=th4:
-            print("threshold reached; y = ", id_B[r][2])
-            temp = grid[i][j]
-            grid[i][j] = grid[i][j-1]
-            grid[i][j-1] = temp
-            id_B[r][1] = id_B[r][1]-1
+        if j!=n-1 :
+            if j>=1 and y>=th4:
+                print("threshold reached; y = ", id_B[r][2])
+                temp = grid[i][j]
+                grid[i][j] = grid[i][j-1]
+                grid[i][j-1] = temp
+                id_B[r][1] = id_B[r][1]-1
 
 
-        y-=Y[i][j]*0.9
-        Y[i][j]=0
-        id_B[r][2]=y
+            y-=Y[i][j]*0.9
+            Y[i][j]=0
+            id_B[r][2]=y
 
         # update the concentrations for V in the entire grid
         for i1 in range(n):
@@ -192,6 +192,7 @@ for t in range(n):
     T.append(t)
 print(Y1)
 print(T)
+print(V)
 
 import matplotlib.pyplot as plt1
 #plt.plot(V1, T)
