@@ -109,7 +109,7 @@ for t in range(n):
         i, j, X, v = id_A[r]
         v+=V[i][j]
         # update position of A's bacterium
-        if j!=n-1 and j>=brightEnoughColumn:
+        if j!=n-1 and j>=brightEnoughColumn and isA(i, j):
             """First update positions of the bacterium"""
             temp = grid[i][j]
             grid[i][j] = grid[i][j+1]
@@ -148,7 +148,7 @@ for t in range(n):
 
         # update position of B's bacterium
 
-        if j!=n-1 :
+        if j!=n-1 and isB(i, j):
             if j>=1 and y>=th4:
                 print("threshold reached; y = ", id_B[r][2])
                 temp = grid[i][j]
@@ -157,9 +157,9 @@ for t in range(n):
                 id_B[r][1] = id_B[r][1]-1
 
 
-            y-=Y[i][j]*0.9
-            Y[i][j]=0
-            id_B[r][2]=y
+                y-=Y[i][j]*0.9
+                Y[i][j]=0
+                id_B[r][2]=y
 
         # update the concentrations for V in the entire grid
         for i1 in range(n):
@@ -190,11 +190,14 @@ for t in range(n):
     V1.append(sumV)
     Y1.append(sumY)
     T.append(t)
-print(Y1)
+print(V1)
 print(T)
+print(Y)
 print(V)
+plt.close()
+#time.sleep(5)
 
 import matplotlib.pyplot as plt1
-#plt.plot(V1, T)
+plt1.plot(V1, T)
 plt1.plot(Y1, T)
 plt1.show()
