@@ -33,7 +33,7 @@ Y1=[]
 V1=[]
 T=[]
 
-th5 = 1
+th5 = 10
 
 decayerOfY = 8.0/9 # the death of Y is imminent
 
@@ -86,7 +86,7 @@ temp=0
 for i in range(n):
     for j in range(n):
         if(isA(i, j)):
-            id_A.append([i, j, 0.0, 0.0])
+            id_A.append([i, j, 0.1, 0.0])
         if(isB(i, j)):
             id_B.append([i, j, 0.0, 0.0])
 
@@ -124,7 +124,6 @@ for t in range(n):
             id_A[r][2] = X
             
 
-
         # update the concentrations for Y in the entire grid
         for i1 in range(n):
             for j1 in range(n):
@@ -135,8 +134,9 @@ for t in range(n):
                     y = j1-j
                     Y[i1][j1]+=1.0/(x*x+y*y) * c
 
-                Y[i1][j1]/=decayerOfY
-
+                #Y[i1][j1]/=decayerOfY
+    #if t==n/2 or t==(n+1)/2:
+        #print(Y)
 
     # updation for Bs
     for r in range(len(id_B)):
@@ -185,13 +185,15 @@ for t in range(n):
     for i in range(n):
         for j in range(n):
             sumV += V[i][j]
-            sumY += Y[i][j]
+
+    for E in id_B:
+        sumY += E[2]
 
     V1.append(sumV)
     Y1.append(sumY)
     T.append(t)
-print(V1)
-print(T)
+#print(V1)
+#print(Y1)
 print(Y)
 print(V)
 plt.close()
